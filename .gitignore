@@ -1,0 +1,21 @@
+# 输出构建目录（每次编译生成，不需要上传）
+dist/
+unpackage/
+
+# 微信开发工具配置文件（本地特有）
+project.private.config.json
+
+# HBuilderX 运行缓存
+*.log
+*.bak
+.DS_Store
+
+# VSCode 配置（如你使用 VSCode）
+.vscode/
+
+# Mac 系统垃圾
+__MACOSX/
+
+# 临时文件
+.idea/
+node_modules/
