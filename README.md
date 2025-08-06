@@ -1,6 +1,4 @@
-# DecideMew
-help person making decisions
-# 🎡 DecideMiao - The Choice Roulette for Indecisive People
+# 🎡 DecideMew - The Choice Roulette for Indecisive People
 
 DecideMiao is a minimalist and playful **roulette-style decision tool** for people who suffer from "choice paralysis". Whether you're struggling with "what to eat tonight" or "whether to send that risky message", this tool helps you decide—randomly and joyfully.
 
