@@ -137,12 +137,25 @@ export default {
       }, interval);
     },
 
-    showResult() {
-      const anglePer = 360 / this.options.length;
-      const pointerAngle = (360 - (this.angle % 360) + anglePer / 2) % 360;
-      const index = Math.floor(pointerAngle / anglePer) % this.options.length;
-      this.result = this.options[index];
-    },
+	showResult() {
+	  const anglePer = 360 / this.options.length;
+
+	  // canvas 是从 3 点钟方向开始绘制（0 度朝右），而我们的箭头在正上方（12 点钟方向）
+	  // 所以 pointer 指针实际指的是：angle = 270 度
+	  const pointerDeg = 270;
+
+	  // 当前转盘的角度（顺时针为正），我们取模归一到 [0, 360)
+	  const normalizedAngle = (this.angle % 360 + 360) % 360;
+
+	  // 计算当前指针指向的真实角度
+	  const targetAngle = (pointerDeg - normalizedAngle + 360) % 360;
+
+	  // 由角度反推 index
+	  const index = Math.floor(targetAngle / anglePer) % this.options.length;
+
+	  this.result = this.options[index];
+	},
+
   },
 };
 </script>
