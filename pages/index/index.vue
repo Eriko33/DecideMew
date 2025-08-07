@@ -1,35 +1,34 @@
 <template>
-  <view class="container">
-    <view class="title-row">
-      <image class="emoji" src="/static/icons/cat-emoji.png" mode="aspectFit" />
-      <text class="title-text">有答案喵 - 功能导航</text>
-    </view>
-    <view class="btn-group">
-      <button @tap="goTo('roulette/roulette')">✨ 随机转盘</button>
-      <button @tap="goTo('answer-book/answer-book')">📖 答案之书</button>
+	<view class="container">
+	<view class="title-row">
+		<image class="emoji" src="/static/icons/cat-emoji.png" mode="aspectFit" />
+		<text class="title-text">有答案喵</text>
+	</view>
+    <view class="button-container">
+      <navigator url="/pages/roulette/roulette" class="nav-button">🎡 随机转盘</navigator>
+      <navigator url="/pages/answer-book/answer-book" class="nav-button">📖 答案之书</navigator>
     </view>
   </view>
 </template>
-
-<script>
-export default {
-  methods: {
-    goTo(page) {
-      wx.navigateTo({
-        url: `/pages/${page}`
-      })
-    }
-  }
-}
-</script>
 
 <style>
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 100rpx;
-  font-family: 'HarmonyOS Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  justify-content: center;
+  justify-content: flex-start; /* 改成靠上 */
+  min-height: 100vh;
+  background-color: #fdfcf9;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  padding-top: 100px; /* 自定义向下挪一点点的间距 */
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 40px;
+  color: #333;
 }
 
 .title-row {
@@ -51,21 +50,27 @@ export default {
   color: #333;
 }
 
-.btn-group {
+
+.button-container {
   display: flex;
   flex-direction: column;
-  gap: 40rpx;
-  width: 200%;
+  gap: 20px;
+  width: 100%;
+  max-width: 300px;
 }
 
-button {
-  font-size: 34rpx;
-  padding: 20rpx;
-  background-color: #ffffff;
-  border: 2rpx solid #e0e0e0;
-  border-radius: 20rpx;
-  box-shadow: 0 6rpx 12rpx rgba(0, 0, 0, 0.05);
-  font-family: inherit;
-  width: 30%;
+.nav-button {
+  background-color: #fffaf0;
+  color: #333;
+  text-align: center;
+  padding: 16px;
+  font-size: 18px;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+  background-color: #fcebd5;
 }
 </style>
