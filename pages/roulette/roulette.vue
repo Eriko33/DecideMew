@@ -8,19 +8,21 @@
       class="textarea"
     />
 
-    <button @click="generateOptions">🎡命运的齿轮</button>
+    <button @click="generateOptions" class="spin-btn">🎡命运的齿轮</button>
 
-    <view class="arrow">🔻</view>
+    <view class="canvas-wrapper">
+      <canvas
+        canvas-id="wheel"
+        class="wheel-canvas"
+        width="300"
+        height="300"
+      />
+      <view v-if="options.length > 1" class="arrow"></view>
+    </view>
 
-    <canvas
-      canvas-id="wheel"
-      style="width: 300px; height: 300px;"
-      width="300"
-      height="300"
-    />
-
-    <view v-if="result" class="result-text">
-      🎯 推荐：{{ result }}
+    <view v-if="result" class="result-box">
+      <image class="emoji" src="/static/icons/cat-emoji.png" mode="aspectFit" />
+      <text class="result-text">推荐：{{ result }}</text>
     </view>
   </view>
 </template>
@@ -35,6 +37,11 @@ export default {
       ctx: null,
       angle: 0,
       spinning: false,
+      pastelColors: [
+        '#FFDDEE', '#FFEBCC', '#FFF4A3', '#E0FFD6',
+        '#D1EEFF', '#CCE5FF', '#E9D1FF', '#FFC8DD',
+        '#D0F4DE', '#FFF1F3', '#FAF3DD', '#F0EFF4'
+      ],
     };
   },
   onReady() {
@@ -50,19 +57,6 @@ export default {
       this.result = '';
       this.drawWheel();
       this.startSpin();
-    },
-
-    hslToRgb(h, s, l) {
-      s /= 100;
-      l /= 100;
-      const k = n => (n + h / 30) % 12;
-      const a = s * Math.min(l, 1 - l);
-      const f = n =>
-        l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-      const r = Math.round(255 * f(0));
-      const g = Math.round(255 * f(8));
-      const b = Math.round(255 * f(4));
-      return `rgb(${r}, ${g}, ${b})`;
     },
 
     drawWheel() {
@@ -81,9 +75,7 @@ export default {
         const start = i * anglePer;
         const end = start + anglePer;
 
-        // 计算颜色
-        const hue = (360 / num) * i;
-        const color = this.hslToRgb(hue, 70, 70);
+        const color = this.pastelColors[i % this.pastelColors.length];
 
         ctx.beginPath();
         ctx.moveTo(150, 150);
@@ -92,11 +84,19 @@ export default {
         ctx.setFillStyle(color);
         ctx.fill();
 
-        // 绘制文字
+        // 白色分隔线
+        ctx.beginPath();
+        ctx.moveTo(150, 150);
+        ctx.arc(150, 150, r, start, start + 0.01);
+        ctx.setStrokeStyle('#fff');
+        ctx.setLineWidth(1);
+        ctx.stroke();
+
+        // 文字
         ctx.save();
         ctx.translate(150, 150);
         ctx.rotate(start + anglePer / 2);
-        ctx.setFillStyle('#000');
+        ctx.setFillStyle('#333');
         ctx.setFontSize(12);
         const text = this.options[i];
         ctx.fillText(text.slice(0, 6), r - 40, 5);
@@ -137,26 +137,15 @@ export default {
       }, interval);
     },
 
-	showResult() {
-	  const anglePer = 360 / this.options.length;
-
-	  // canvas 是从 3 点钟方向开始绘制（0 度朝右），而我们的箭头在正上方（12 点钟方向）
-	  // 所以 pointer 指针实际指的是：angle = 270 度
-	  const pointerDeg = 270;
-
-	  // 当前转盘的角度（顺时针为正），我们取模归一到 [0, 360)
-	  const normalizedAngle = (this.angle % 360 + 360) % 360;
-
-	  // 计算当前指针指向的真实角度
-	  const targetAngle = (pointerDeg - normalizedAngle + 360) % 360;
-
-	  // 由角度反推 index
-	  const index = Math.floor(targetAngle / anglePer) % this.options.length;
-
-	  this.result = this.options[index];
-	},
-
-  },
+    showResult() {
+      const anglePer = 360 / this.options.length;
+      const pointerDeg = 270;
+      const normalizedAngle = (this.angle % 360 + 360) % 360;
+      const targetAngle = (pointerDeg - normalizedAngle + 360) % 360;
+      const index = Math.floor(targetAngle / anglePer) % this.options.length;
+      this.result = this.options[index];
+    },
+  }
 };
 </script>
 
@@ -165,47 +154,92 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding-top: 40px;
+  min-height: 100vh;
+  background-color: #fdfcf9;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
 }
 
 .title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
 }
 
 .textarea {
-  width: 90%;
-  min-height: 100px;
-  border: 1px solid #ccc;
+  width: 260px;
+  height: 120px;
+  margin-bottom: 20px;
   padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 6px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  background-color: #fffaf0;
   font-size: 14px;
+  color: #333;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
 }
 
-button {
-  width: 90%;
-  padding: 12px;
-  background-color: #42b983;
-  color: white;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  margin-bottom: 20px;
+.spin-btn {
+  background-color: #ffe8cc;
+  color: #333;
+  padding: 12px 24px;
   font-size: 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+  transition: background-color 0.3s;
+}
+
+.spin-btn:hover {
+  background-color: #ffd8a8;
+}
+
+.canvas-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+
+.wheel-canvas {
+  width: 300px;
+  height: 300px;
 }
 
 .arrow {
-  font-size: 32px;
-  margin-bottom: -20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 10;
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 36px solid #ffffff; /* 纯白箭头，干净高级 */
+  pointer-events: none;
+}
+
+.result-box {
+  display: flex;
+  align-items: center;
+  background-color: #fffaf0;
+  padding: 14px 20px;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-top: 32px;
+}
+
+.emoji {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
 }
 
 .result-text {
-  margin-top: 15px;
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 20px;
+  font-family: Georgia, serif;
   color: #333;
 }
 </style>

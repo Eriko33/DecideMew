@@ -1,24 +1,25 @@
 <template>
   <view class="container">
-    <text class="title">📖 答案之书</text>
+    <view class="title">📖 答案之书</view>
 
-    <view v-if="stage === 'ask'" class="prompt">
-      请你心里默念一个问题
-    </view>
+    <!-- 初始提示 -->
+    <view v-if="!isLoading && !answer" class="prompt">请你心里默念一个问题</view>
 
-    <view v-else-if="stage === 'thinking'" class="thinking">
-      答案之书正在回答……
-    </view>
 
-    <view v-else class="answer">
-      {{ answer }}
-    </view>
+    <!-- 加载状态 -->
+    <view v-if="isLoading" class="answer-box loading">正在召唤猫猫智慧…</view>
 
-    <!-- “开始”按钮，仅在 ask 阶段显示 -->
-    <button v-if="stage === 'ask'" class="btn" @tap="start">开始</button>
-
-    <!-- “再次提问”按钮，仅在 answer 阶段显示 -->
-    <button v-if="stage === 'answer'" class="btn" @tap="reset">再次提问</button>
+    <!-- 最终回答 -->
+    <view v-if="answer" class="answer-box">{{ answer }}</view>
+	
+	<!-- 开始 / 再问一次 按钮 -->
+	<button
+	  v-if="!isLoading"
+	  class="start-button"
+	  @click="answer ? reset() : startAnswer()"
+	>
+	  {{ answer ? '再问一次' : '提问' }}
+	</button>
   </view>
 </template>
 
@@ -26,38 +27,47 @@
 export default {
   data() {
     return {
-      stage: 'ask', // 'ask' | 'thinking' | 'answer'
-      answer: '',
+      isLoading: false,
+      answer: null,
       answers: [
-        '是的，一定会实现。',
-        '再试一次，也许结果不同。',
-        '坚持你的信念。',
-        '这个问题暂时没有答案。',
-        '不是时候。',
-        '当然可以。',
-        '你已经知道答案了。',
-        '去做吧，不要犹豫。',
-        '未来会告诉你真相。',
-        '请放下这个念头。'
+        "当然可以",
+        "再试一次",
+        "现在还不是时候",
+        "坚持你的想法",
+        "听从内心的声音",
+        "答案在风中飘荡",
+        "是的，只要你相信",
+        "不如换个方向",
+        "静待花开",
+        "结果可能出人意料",
+        "这值得一试",
+        "别急，时机未到",
+        "先喝口水再说",
+        "你已经知道答案了",
+        "向前一步，风景会不同",
+        "别问我，问猫",
+        "这对你很重要",
+        "放下也是一种答案",
+        "命运的齿轮已经开始转动",
+        "下一次再问我吧"
       ]
-    }
+    };
   },
   methods: {
-    start() {
-      this.stage = 'thinking'
-      this.answer = ''
+    startAnswer() {
+      this.isLoading = true;
+      this.answer = null;
       setTimeout(() => {
-        const randomIndex = Math.floor(Math.random() * this.answers.length)
-        this.answer = this.answers[randomIndex]
-        this.stage = 'answer'
-      }, 2000)
+        const idx = Math.floor(Math.random() * this.answers.length);
+        this.answer = this.answers[idx];
+        this.isLoading = false;
+      }, 1800);
     },
     reset() {
-      this.stage = 'ask'
-      this.answer = ''
+      this.answer = null;
     }
   }
-}
+};
 </script>
 
 <style>
@@ -65,24 +75,56 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding-top: 100rpx;
+  padding-top: 60px;
+  min-height: 100vh;
+  background-color: #fdfcf9;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
 }
+
 .title {
-  font-size: 32rpx;
-  margin-bottom: 40rpx;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 24px;
+  color: #333;
 }
-.prompt, .thinking, .answer {
-  font-size: 28rpx;
-  margin-bottom: 60rpx;
+
+.prompt {
+  font-size: 18px;
+  margin-bottom: 24px;
+  color: #666;
+}
+
+.start-button {
+  background-color: #ffe8cc;
+  color: #333;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 18px;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+  transition: background-color 0.3s;
+  margin-top: 12px;
+}
+
+.start-button:hover {
+  background-color: #ffd8a8;
+}
+
+.answer-box {
+  background-color: #fffaf0;
+  padding: 18px 26px;
+  border-radius: 16px;
+  margin-top: 30px;
+  font-size: 20px;
+  font-family: Georgia, serif;
+  color: #333;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  max-width: 80%;
   text-align: center;
-  padding: 0 40rpx;
 }
-.btn {
-  background-color: #ffffff;
-  border-radius: 20rpx;
-  padding: 20rpx 40rpx;
-  font-size: 28rpx;
-  margin-top: 20rpx;
+
+.loading {
+  font-style: italic;
+  color: #999;
 }
 </style>
