@@ -1,8 +1,12 @@
 <template>
   <view class="container">
-    <view class="title">🧠 决定喵 </view>
+    <view class="title">🧠 决定喵</view>
 
-    <textarea v-model="inputText" placeholder="请输入选项（每行一个）" class="textarea" />
+    <textarea
+      v-model="inputText"
+      placeholder="请输入选项（每行一个）"
+      class="textarea"
+    />
 
     <button @click="generateOptions">🎡 命运的齿轮</button>
 
@@ -31,100 +35,116 @@ export default {
       ctx: null,
       angle: 0,
       spinning: false,
-    }
+    };
   },
   onReady() {
-    this.ctx = uni.createCanvasContext('wheel', this)
+    this.ctx = uni.createCanvasContext('wheel', this);
   },
   methods: {
     generateOptions() {
-      this.options = this.inputText.split('\n').map(s => s.trim()).filter(Boolean)
+      this.options = this.inputText.split('\n').map(s => s.trim()).filter(Boolean);
       if (this.options.length < 2) {
-        uni.showToast({ title: '请输入至少两个选项', icon: 'none' })
-        return
+        uni.showToast({ title: '请输入至少两个选项', icon: 'none' });
+        return;
       }
-      this.result = ''
-      this.drawWheel()
-      this.startSpin()
+      this.result = '';
+      this.drawWheel();
+      this.startSpin();
+    },
+
+    hslToRgb(h, s, l) {
+      s /= 100;
+      l /= 100;
+      const k = n => (n + h / 30) % 12;
+      const a = s * Math.min(l, 1 - l);
+      const f = n =>
+        l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+      const r = Math.round(255 * f(0));
+      const g = Math.round(255 * f(8));
+      const b = Math.round(255 * f(4));
+      return `rgb(${r}, ${g}, ${b})`;
     },
 
     drawWheel() {
-      const ctx = this.ctx
-      const num = this.options.length
-      const anglePer = 2 * Math.PI / num
-      const r = 130
+      const ctx = this.ctx;
+      const num = this.options.length;
+      const anglePer = 2 * Math.PI / num;
+      const r = 130;
 
-      ctx.clearRect(0, 0, 300, 300)
-      ctx.save()
-      ctx.translate(150, 150)
-      ctx.rotate(this.angle * Math.PI / 180)
-      ctx.translate(-150, -150)
+      ctx.clearRect(0, 0, 300, 300);
+      ctx.save();
+      ctx.translate(150, 150);
+      ctx.rotate(this.angle * Math.PI / 180);
+      ctx.translate(-150, -150);
 
       for (let i = 0; i < num; i++) {
-        const start = i * anglePer
-        const end = start + anglePer
+        const start = i * anglePer;
+        const end = start + anglePer;
 
-        ctx.beginPath()
-        ctx.moveTo(150, 150)
-        ctx.arc(150, 150, r, start, end)
-        ctx.closePath()
-        ctx.setFillStyle(i % 2 === 0 ? '#FFDD88' : '#FF9999')
-        ctx.fill()
+        // 计算颜色
+        const hue = (360 / num) * i;
+        const color = this.hslToRgb(hue, 70, 70);
+
+        ctx.beginPath();
+        ctx.moveTo(150, 150);
+        ctx.arc(150, 150, r, start, end);
+        ctx.closePath();
+        ctx.setFillStyle(color);
+        ctx.fill();
 
         // 绘制文字
-        ctx.save()
-        ctx.translate(150, 150)
-        ctx.rotate(start + anglePer / 2)
-        ctx.setFillStyle('#000')
-        ctx.setFontSize(12)
-        const text = this.options[i]
-        ctx.fillText(text.slice(0, 6), r - 40, 5)
-        ctx.restore()
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate(start + anglePer / 2);
+        ctx.setFillStyle('#000');
+        ctx.setFontSize(12);
+        const text = this.options[i];
+        ctx.fillText(text.slice(0, 6), r - 40, 5);
+        ctx.restore();
       }
 
-      ctx.restore()
-      ctx.draw(true) // 必须加 true 刷新 canvas 内容
+      ctx.restore();
+      ctx.draw(true);
     },
 
     startSpin() {
-      if (this.spinning) return
+      if (this.spinning) return;
 
-      this.spinning = true
+      this.spinning = true;
+      const totalAngle = 360 * 5 + Math.floor(Math.random() * 360);
+      const duration = 3000;
+      const steps = 60;
+      const interval = duration / steps;
+      let step = 0;
 
-      const totalAngle = 360 * 5 + Math.floor(Math.random() * 360)
-      const duration = 3000
-      const steps = 60
-      const interval = duration / steps
-      let step = 0
-
-      const startAngle = this.angle
-      const change = totalAngle - startAngle
+      const startAngle = this.angle;
+      const change = totalAngle - startAngle;
 
       const timer = setInterval(() => {
-        step++
-        const t = step / steps
-        const ease = 1 - Math.pow(1 - t, 3)
-        this.angle = (startAngle + change * ease) % 360
-        this.drawWheel()
+        step++;
+        const t = step / steps;
+        const ease = 1 - Math.pow(1 - t, 3);
+        this.angle = (startAngle + change * ease) % 360;
+        this.drawWheel();
 
         if (step >= steps) {
-          clearInterval(timer)
-          this.spinning = false
-          this.angle = this.angle % 360
-          this.drawWheel()
-          this.showResult()
+          clearInterval(timer);
+          this.spinning = false;
+          this.angle = this.angle % 360;
+          this.drawWheel();
+          this.showResult();
         }
-      }, interval)
+      }, interval);
     },
 
     showResult() {
-      const anglePer = 360 / this.options.length
-      const current = 360 - (this.angle % 360) + anglePer / 2
-      const index = Math.floor((current % 360) / anglePer) % this.options.length
-      this.result = this.options[index]
+      const anglePer = 360 / this.options.length;
+      const pointerAngle = (360 - (this.angle % 360) + anglePer / 2) % 360;
+      const index = Math.floor(pointerAngle / anglePer) % this.options.length;
+      this.result = this.options[index];
     },
   },
-}
+};
 </script>
 
 <style>
