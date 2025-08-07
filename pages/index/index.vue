@@ -1,8 +1,23 @@
 <template>
   <view class="container">
-    <view>调试版本 2.0 🚀</view>
-    <canvas canvas-id="wheel" class="wheel-canvas" style="width: 300px; height: 300px;" width="300" height="300" />
-    <button @click="startSpin">🎡 直接测试动画</button>
+    <view class="title">🧠 决定喵 </view>
+
+    <textarea v-model="inputText" placeholder="请输入选项（每行一个）" class="textarea" />
+
+    <button @click="generateOptions">🎡 命运的齿轮</button>
+
+    <view class="arrow">🔻</view>
+
+    <canvas
+      canvas-id="wheel"
+      style="width: 300px; height: 300px;"
+      width="300"
+      height="300"
+    />
+
+    <view v-if="result" class="result-text">
+      🎯 推荐：{{ result }}
+    </view>
   </view>
 </template>
 
@@ -10,65 +25,105 @@
 export default {
   data() {
     return {
+      inputText: '',
+      options: [],
+      result: '',
       ctx: null,
-      angle: 0
+      angle: 0,
+      spinning: false,
     }
   },
   onReady() {
-    const ctx = uni.createCanvasContext('wheel', this)
-    ctx.setFillStyle('#FF0000')
-    ctx.fillRect(0, 0, 100, 100)  // 画一个红色方块
-    ctx.draw()
+    this.ctx = uni.createCanvasContext('wheel', this)
   },
   methods: {
-    drawTestWheel() {
+    generateOptions() {
+      this.options = this.inputText.split('\n').map(s => s.trim()).filter(Boolean)
+      if (this.options.length < 2) {
+        uni.showToast({ title: '请输入至少两个选项', icon: 'none' })
+        return
+      }
+      this.result = ''
+      this.drawWheel()
+      this.startSpin()
+    },
+
+    drawWheel() {
       const ctx = this.ctx
-      const r = 100
-      const angle = this.angle * Math.PI / 180
+      const num = this.options.length
+      const anglePer = 2 * Math.PI / num
+      const r = 130
 
       ctx.clearRect(0, 0, 300, 300)
+      ctx.save()
+      ctx.translate(150, 150)
+      ctx.rotate(this.angle * Math.PI / 180)
+      ctx.translate(-150, -150)
 
-      // 扇形
-      ctx.beginPath()
-      ctx.moveTo(150, 150)
-      ctx.arc(150, 150, r, angle, angle + Math.PI)
-      ctx.closePath()
-      ctx.setFillStyle('#FF8888')
-      ctx.fill()
+      for (let i = 0; i < num; i++) {
+        const start = i * anglePer
+        const end = start + anglePer
 
-      ctx.beginPath()
-      ctx.moveTo(150, 150)
-      ctx.arc(150, 150, r, angle + Math.PI, angle + 2 * Math.PI)
-      ctx.closePath()
-      ctx.setFillStyle('#FFCC00')
-      ctx.fill()
+        ctx.beginPath()
+        ctx.moveTo(150, 150)
+        ctx.arc(150, 150, r, start, end)
+        ctx.closePath()
+        ctx.setFillStyle(i % 2 === 0 ? '#FFDD88' : '#FF9999')
+        ctx.fill()
 
-      ctx.draw()
+        // 绘制文字
+        ctx.save()
+        ctx.translate(150, 150)
+        ctx.rotate(start + anglePer / 2)
+        ctx.setFillStyle('#000')
+        ctx.setFontSize(12)
+        const text = this.options[i]
+        ctx.fillText(text.slice(0, 6), r - 40, 5)
+        ctx.restore()
+      }
+
+      ctx.restore()
+      ctx.draw(true) // 必须加 true 刷新 canvas 内容
     },
 
     startSpin() {
-      let total = 360 * 5
-      let duration = 3000
-      let start = Date.now()
+      if (this.spinning) return
 
-      const animate = () => {
-        let now = Date.now()
-        let t = (now - start) / duration
-        if (t >= 1) {
-          this.angle = total % 360
-          this.drawTestWheel()
-          return
-        }
+      this.spinning = true
 
+      const totalAngle = 360 * 5 + Math.floor(Math.random() * 360)
+      const duration = 3000
+      const steps = 60
+      const interval = duration / steps
+      let step = 0
+
+      const startAngle = this.angle
+      const change = totalAngle - startAngle
+
+      const timer = setInterval(() => {
+        step++
+        const t = step / steps
         const ease = 1 - Math.pow(1 - t, 3)
-        this.angle = (total * ease) % 360
-        this.drawTestWheel()
-        requestAnimationFrame(animate)
-      }
+        this.angle = (startAngle + change * ease) % 360
+        this.drawWheel()
 
-      animate()
-    }
-  }
+        if (step >= steps) {
+          clearInterval(timer)
+          this.spinning = false
+          this.angle = this.angle % 360
+          this.drawWheel()
+          this.showResult()
+        }
+      }, interval)
+    },
+
+    showResult() {
+      const anglePer = 360 / this.options.length
+      const current = 360 - (this.angle % 360) + anglePer / 2
+      const index = Math.floor((current % 360) / anglePer) % this.options.length
+      this.result = this.options[index]
+    },
+  },
 }
 </script>
 
@@ -79,17 +134,45 @@ export default {
   align-items: center;
   padding: 20px;
 }
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.textarea {
+  width: 90%;
+  min-height: 100px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
 button {
-  margin-top: 20px;
-  padding: 12px 20px;
+  width: 90%;
+  padding: 12px;
   background-color: #42b983;
   color: white;
   font-weight: bold;
   border: none;
   border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 16px;
 }
-.wheel-canvas {
-  background-color: #f8f8f8;
-  margin-top: 20px;
+
+.arrow {
+  font-size: 32px;
+  margin-bottom: -20px;
+  z-index: 10;
+}
+
+.result-text {
+  margin-top: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
 }
 </style>
