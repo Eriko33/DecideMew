@@ -25,6 +25,7 @@ export function collectFragment() {
   } else {
     uni.showToast({ title: '✨ 猫猫碎片 +1', icon: 'none' })
   }
+  uni.$emit('fragment-collected')
 }
 
 function getRandomCatCard() {

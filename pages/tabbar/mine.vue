@@ -7,6 +7,8 @@
 
     <view class="fragment-box">
       <text class="fragment-count">碎片总数：{{ fragmentCount }}</text>
+	</view>
+	<view class="fragment-box">
       <text class="fragment-today">今日已收集：{{ todayCount }}/10</text>
     </view>
 
@@ -33,7 +35,6 @@ export default {
   },
   onLoad() {
     this.loadFragmentData();
-    // 监听碎片收集事件，自动刷新
     uni.$on('fragment-collected', this.loadFragmentData);
   },
   onUnload() {
@@ -41,20 +42,19 @@ export default {
   },
   methods: {
     loadFragmentData() {
-      const today = new Date().toDateString();
-      const data = uni.getStorageSync('fragmentData') || {
-        total: 0,
-        count: 0,
-        date: '',
-        cards: []
-      };
-      this.fragmentCount = data.total || 0;
-      this.todayCount = data.date === today ? data.count : 0;
-      this.cards = data.cards || [];
+      const now = new Date();
+      const todayKey = `fragment-${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+      const totalKey = 'fragment-total';
+      const cardKey = 'cat-cards';
+
+      this.fragmentCount = uni.getStorageSync(totalKey) || 0;
+      this.todayCount = uni.getStorageSync(todayKey) || 0;
+      this.cards = uni.getStorageSync(cardKey) || [];
     }
   }
 };
 </script>
+
 
 <style>
 .mine-container {
@@ -87,7 +87,7 @@ export default {
   padding: 30rpx;
   border-radius: 20rpx;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  margin-bottom: 60rpx;
+  margin-bottom: 10rpx;
 }
 
 .fragment-count,
@@ -98,7 +98,7 @@ export default {
 }
 
 .card-section {
-  margin-top: 30rpx;
+  margin-top: 50rpx;
 }
 
 .card-title {
@@ -111,7 +111,8 @@ export default {
 .card-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 36rpx;
+  margin-top: 30rpx;
 }
 
 .card-item {
