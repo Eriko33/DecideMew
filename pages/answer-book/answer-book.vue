@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <view class="title">📖 答案之书</view>
+    <view class="title">📖 喵有答案</view>
 
     <!-- 初始提示 -->
     <view v-if="!isLoading && !answer" class="prompt">请你心里默念一个问题</view>

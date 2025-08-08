@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <view class="title">有答案喵</view>
+    <view class="title">喵有答案</view>
 
     <textarea
       v-model="inputText"
@@ -217,7 +217,7 @@ export default {
   height: 0;
   border-left: 14px solid transparent;
   border-right: 14px solid transparent;
-  border-bottom: 36px solid #ffffff; /* 纯白箭头，干净高级 */
+  border-bottom: 36px solid #ffd8a8; /* 纯白箭头，干净高级 */
   pointer-events: none;
 }
 

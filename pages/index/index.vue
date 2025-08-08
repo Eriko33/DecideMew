@@ -2,11 +2,12 @@
 	<view class="container">
 	<view class="title-row">
 		<image class="emoji" src="/static/icons/cat-emoji.png" mode="aspectFit" />
-		<text class="title-text">有答案喵</text>
+		<text class="title-text">喵有答案</text>
 	</view>
     <view class="button-container">
       <navigator url="/pages/roulette/roulette" class="nav-button">🎡 随机转盘</navigator>
       <navigator url="/pages/answer-book/answer-book" class="nav-button">📖 答案之书</navigator>
+	  <navigator url="/pages/miaoverse/miaoverse" class="nav-button">🌌 喵宇宙游戏</navigator>
     </view>
   </view>
 </template>

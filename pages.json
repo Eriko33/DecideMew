@@ -1,31 +1,67 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "有答案喵"
-			}
-		},
-		{
-			"path" : "pages/roulette/roulette",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
-			}
-		},
-		{
-			"path" : "pages/answer-book/answer-book",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
-			}
-		}
-	],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "有答案喵",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	},
-	"uniIdRouter": {}
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "喵有答案"
+      }
+    },
+    {
+      "path": "pages/roulette/roulette",
+      "style": {
+        "navigationBarTitleText": "命运转盘"
+      }
+    },
+    {
+      "path": "pages/answer-book/answer-book",
+      "style": {
+        "navigationBarTitleText": "答案之书"
+      }
+    },
+    {
+      "path": "pages/miaoverse/miaoverse",
+      "style": {
+        "navigationBarTitleText": "喵宇宙游戏"
+      }
+    },
+    {
+      "path": "pages/miaotask/miaotask",
+      "style": {
+        "navigationBarTitleText": "喵喵指令牌"
+      }
+    },
+    {
+      "path": "pages/miaokill/miaokill",
+      "style": {
+        "navigationBarTitleText": "喵喵杀"
+      }
+    },
+    {
+      "path": "pages/miaomind/miaomind",
+      "style": {
+        "navigationBarTitleText": "喵喵心理"
+      }
+    },
+    {
+      "path": "pages/miaovote/miaovote",
+      "style": {
+        "navigationBarTitleText": "喵最..."
+      }
+    }
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFF7ED",
+    "navigationBarTitleText": "喵有答案",
+    "navigationBarTextStyle": "black",
+	"backgroundColor": "#FFF7ED"
+  },
+  "globalStyle": {
+  	"navigationBarTextStyle": "black",
+  	"navigationBarTitleText": "喵有答案",
+  	"navigationBarBackgroundColor": "#FFF7ED",
+  	"backgroundColor": "#FFF7ED"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
 }
